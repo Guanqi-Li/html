@@ -87,44 +87,38 @@
   button{cursor:pointer;border:none;background:none;color:inherit;}
   [hidden]{display:none!important;}
 
-  .app-shell{
-    min-height:100vh;
-    padding:24px 28px;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-  }
+  .app-shell{min-height:100vh;width:100%;}
   .view{display:none;width:100%;}
   .view.active{display:block;animation:fadeIn .18s ease-out;}
   @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
-  /* ===== 桌面居中一体化 Studio 视窗 ===== */
+  /* ===== 桌面全屏无缝延伸 + 核心 1200px 视觉居中架构 ===== */
   .layout{
     width:100%;
-    max-width:1200px;
-    margin:0 auto;
+    min-height:100vh;
     display:grid;
-    grid-template-columns:264px minmax(0,1fr);
-    min-height:calc(100vh - 48px);
+    grid-template-columns:max(264px, calc((100% - 1200px) / 2 + 264px)) minmax(0,1fr);
     background:var(--bg);
-    border:1px solid var(--line);
-    border-radius:22px;
-    box-shadow:0 2px 6px rgba(24,24,27,.03), 0 20px 56px -18px rgba(24,24,27,.10);
-    overflow:clip;
   }
 
-  /* 左侧架构导航栏 */
+  /* 左侧架构导航栏（底色向左无限延伸至屏边，内容贴近视觉中心） */
   .sidebar{
     background:var(--rail-bg);
     border-right:1px solid var(--line);
-    padding:22px 18px 20px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    display:flex;
+    justify-content:flex-end;
+  }
+  .sidebar-inner{
+    width:264px;
+    min-height:100%;
+    padding:24px 18px 20px;
     display:flex;
     flex-direction:column;
     gap:18px;
-    position:sticky;
-    top:24px;
-    max-height:calc(100vh - 48px);
-    overflow-y:auto;
   }
 
   /* 顶部品牌 + 实时完成度圆环 */
@@ -252,6 +246,21 @@
 
   /* 侧栏底部云端与备份区 */
   .side-sync-card{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);}
+  .sync-meta-desktop{
+    font-size:11px;color:var(--text-muted);padding:0 10px;margin-top:2px;
+    font-variant-numeric:tabular-nums;line-height:1.4;min-height:16px;
+  }
+  .sync-meta-desktop.pending{color:var(--mid);}
+  .sync-meta-desktop.syncing{color:var(--primary);}
+  .sync-meta-desktop.error{color:var(--danger);}
+  .sync-meta-desktop.ok{color:var(--text-muted);}
+  .mobile-sync-status{
+    display:none;font-size:10.5px;color:var(--text-muted);line-height:1.15;
+    margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .mobile-sync-status.pending{color:var(--mid);}
+  .mobile-sync-status.syncing{color:var(--primary);}
+  .mobile-sync-status.error{color:var(--danger);}
   .sync-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
   .data-btn{
     display:inline-flex;align-items:center;justify-content:center;gap:5px;
@@ -276,13 +285,17 @@
     padding-bottom:calc(64px + env(safe-area-inset-bottom));
   }
 
-  /* 顶部吸顶磨砂控制栏 */
+  /* 顶部吸顶磨砂控制栏（底色与分割线向右无缝延伸至屏边） */
   .top-bar{
     position:sticky;top:0;z-index:15;
     background:var(--surface-glass);
     backdrop-filter:blur(20px) saturate(140%);
     -webkit-backdrop-filter:blur(20px) saturate(140%);
     border-bottom:1px solid var(--line);
+  }
+  .top-bar-inner{
+    width:100%;
+    max-width:936px;
     padding:16px 28px;
     display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
   }
@@ -345,10 +358,11 @@
   .search-clear.show{display:flex;}
   .search-clear:hover{background:var(--surface-muted);color:var(--text);}
 
-  /* 内容容器（撑满右侧居中画布，与顶栏左右严格对齐） */
+  /* 内容容器（与顶栏同宽 936px，联合左侧 264px 严格居中） */
   .canvas-inner{
     padding:18px 28px 0;
     width:100%;
+    max-width:936px;
     display:flex;flex-direction:column;gap:14px;
   }
 
@@ -736,25 +750,22 @@
 
   /* ===== 窄桌面 / Mac 半屏（681px–960px） ===== */
   @media (max-width:960px) and (min-width:681px){
-    .app-shell{padding:12px;}
-    .layout{grid-template-columns:228px minmax(0,1fr);min-height:calc(100vh - 24px);border-radius:16px;}
-    .sidebar{padding:18px 14px;}
-    .top-bar{padding:14px 20px;}
+    .layout{grid-template-columns:228px minmax(0,1fr);}
+    .sidebar-inner{width:228px;padding:18px 14px;}
+    .top-bar-inner{padding:14px 20px;}
     .canvas-inner{padding:14px 20px 0;}
     .search-wrap{width:170px;}
   }
 
   /* ===== 手机响应式适配（<= 680px，首屏即见待办内容） ===== */
   @media (max-width:680px){
-    .app-shell{padding:0;display:block;}
-    .layout{
-      grid-template-columns:1fr;min-height:auto;max-width:none;
-      border:none;border-radius:0;box-shadow:none;background:transparent;overflow:visible;
-    }
+    .layout{grid-template-columns:1fr;min-height:auto;background:transparent;}
     .sidebar{
       position:static;height:auto;overflow:visible;
-      background:transparent;border-right:none;
-      padding:10px 10px 0;gap:8px;
+      background:transparent;border-right:none;display:block;
+    }
+    .sidebar-inner{
+      width:100%;min-height:auto;padding:10px 10px 0;gap:8px;
     }
     .brand-card{
       background:var(--surface);border:1px solid var(--line);
@@ -764,8 +775,9 @@
     .brand-ring{width:30px;height:30px;}
     .brand-ring svg{width:30px;height:30px;}
     .ring-pct{font-size:8.5px;}
-    .brand-text h1{font-size:16px;}
+    .brand-text h1{font-size:15px;line-height:1.15;}
     .brand-date{display:none;}
+    .mobile-sync-status{display:block;}
     .desktop-add-btn,.side-cat-card,.side-sync-card,.view-heading{display:none;}
     .mobile-head-actions{display:flex;}
 
@@ -782,8 +794,8 @@
     .main-pane{padding-bottom:calc(88px + env(safe-area-inset-bottom));}
     .top-bar{
       position:static;background:transparent;backdrop-filter:none;border-bottom:none;
-      padding:8px 10px 0;
     }
+    .top-bar-inner{max-width:none;padding:8px 10px 0;}
     .toolbar{
       width:100%;background:var(--surface);border:1px solid var(--line);
       border-radius:13px;padding:8px 9px;gap:6px;box-shadow:var(--shadow-sheet);
@@ -825,6 +837,7 @@
 
       <!-- 左侧导航栏（桌面全高架构；手机端折叠为极简首屏） -->
       <aside class="sidebar">
+        <div class="sidebar-inner">
         <div class="brand-card">
           <div class="brand-top">
             <div class="brand-title-wrap">
@@ -838,6 +851,7 @@
               <div class="brand-text">
                 <h1>待办清单</h1>
                 <div class="brand-date" id="todayDateDisplay"></div>
+                <div class="mobile-sync-status" id="syncStatusMobile">未绑定云端</div>
               </div>
             </div>
             <div class="brand-controls">
@@ -910,6 +924,7 @@
 
         <div class="side-section side-sync-card">
           <div class="side-title">云端与备份</div>
+          <div class="sync-meta-desktop" id="syncStatusDesktop">未绑定云端</div>
           <div class="sync-grid">
             <button type="button" class="data-btn full" id="bindBtn">绑定云端</button>
             <button type="button" class="data-btn" id="saveCloudBtn">保存到云端</button>
@@ -918,11 +933,13 @@
             <button type="button" class="data-btn" id="importBtn">导入备份</button>
           </div>
         </div>
+        </div>
       </aside>
 
       <!-- 右侧主工作画布 -->
       <main class="main-pane">
         <div class="top-bar">
+          <div class="top-bar-inner">
           <div class="view-heading">
             <h2 id="viewHeadingTitle">全部待办</h2>
             <span class="view-heading-count" id="viewHeadingCount">0 项</span>
@@ -948,6 +965,7 @@
               <input type="text" id="search" placeholder="搜索待办标题…">
               <button type="button" class="search-clear" id="searchClear" aria-label="清空搜索">×</button>
             </div>
+          </div>
           </div>
         </div>
 
@@ -1118,6 +1136,10 @@
   var DATA_KEY = "todo_items_v3";
   var CRED_KEY = "todo_pantry_cred_v1";
   var THEME_KEY = "todo_theme_pref_v1";
+  var LAST_SYNC_KEY = "todo_last_cloud_sync_v1";
+  var SYNC_DEBOUNCE_MS = 8000;
+  var SYNC_COOLDOWN_MS = 15000;
+  var SYNC_429_BACKOFF_MS = 60000;
   var API = {
     base: "https://getpantry.cloud/apiv1/pantry",
     basket: "todos"
@@ -1128,6 +1150,13 @@
   var draftSubtasks = [];
   var expandedSubs = {};
   var filterStatus = "all", filterCategory = "all", keyword = "";
+  var syncDirty = false;
+  var syncing = false;
+  var syncTimer = null;
+  var lastAttemptAt = 0;
+  var mutationSeq = 0;
+  var lastCloudSaveAt = loadLastSync();
+  var syncState = "idle"; // idle | pending | syncing | error | ratelimit
 
   // DOM
   var listEl = document.getElementById("list");
@@ -1152,6 +1181,8 @@
   var bindBtn = document.getElementById("bindBtn");
   var bindBtnMobile = document.getElementById("bindBtnMobile");
   var bindBtnMobileText = document.getElementById("bindBtnMobileText");
+  var syncStatusDesktop = document.getElementById("syncStatusDesktop");
+  var syncStatusMobile = document.getElementById("syncStatusMobile");
   var ringFg = document.getElementById("ringFg");
   var ringPct = document.getElementById("ringPct");
   var viewHeadingTitle = document.getElementById("viewHeadingTitle");
@@ -1285,9 +1316,91 @@
       return normalize(raw ? JSON.parse(raw) : []);
     }catch(e){ return []; }
   }
-  function save(){
+  function loadLastSync(){
+    try{
+      var v = Number(localStorage.getItem(LAST_SYNC_KEY) || 0);
+      return isFinite(v) && v > 0 ? v : 0;
+    }catch(e){ return 0; }
+  }
+  function setLastSync(ts){
+    lastCloudSaveAt = ts || 0;
+    try{
+      if(lastCloudSaveAt) localStorage.setItem(LAST_SYNC_KEY, String(lastCloudSaveAt));
+    }catch(e){}
+  }
+  function fmtSyncTime(ts){
+    if(!ts) return "";
+    var d = new Date(ts);
+    var now = new Date();
+    var hm = pad(d.getHours()) + ":" + pad(d.getMinutes());
+    if(d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()){
+      return hm;
+    }
+    return (d.getMonth() + 1) + "/" + d.getDate() + " " + hm;
+  }
+  function updateSyncStatusUI(){
+    if(!syncStatusDesktop || !syncStatusMobile) return;
+    var isBound = !!(cloud && cloud.pantryId);
+    var dText = "", mText = "", cls = "";
+    if(!isBound){
+      dText = "未绑定云端（仅本地保存）";
+      mText = "未绑定云端";
+    }else if(syncState === "syncing"){
+      dText = "正在自动同步到云端…";
+      mText = "同步中…";
+      cls = "syncing";
+    }else if(syncState === "pending"){
+      dText = "有新改动，稍后自动同步…";
+      mText = "待自动同步…";
+      cls = "pending";
+    }else if(syncState === "ratelimit"){
+      dText = "请求频繁，60 秒后自动重试";
+      mText = "限流，稍后重试";
+      cls = "error";
+    }else if(syncState === "error"){
+      dText = "云端同步失败，待自动重试";
+      mText = "同步失败，待重试";
+      cls = "error";
+    }else if(lastCloudSaveAt){
+      var tStr = fmtSyncTime(lastCloudSaveAt);
+      dText = "上次保存：" + tStr;
+      mText = "已保存 " + tStr;
+      cls = "ok";
+    }else{
+      dText = "已开启自动同步";
+      mText = "已开启自动同步";
+    }
+    syncStatusDesktop.textContent = dText;
+    syncStatusDesktop.className = "sync-meta-desktop" + (cls ? " " + cls : "");
+    syncStatusMobile.textContent = mText;
+    syncStatusMobile.className = "mobile-sync-status" + (cls ? " " + cls : "");
+  }
+
+  function scheduleAutoSync(minDelayMs){
+    if(!cloud || !cloud.pantryId || !syncDirty) return;
+    if(syncTimer){ clearTimeout(syncTimer); syncTimer = null; }
+    var cooldownLeft = Math.max(0, (lastAttemptAt + SYNC_COOLDOWN_MS) - Date.now());
+    var delay = Math.max(SYNC_DEBOUNCE_MS, minDelayMs || 0, cooldownLeft);
+    if(!syncing){
+      syncState = minDelayMs === SYNC_429_BACKOFF_MS ? "ratelimit" : "pending";
+      updateSyncStatusUI();
+    }
+    syncTimer = setTimeout(function(){
+      syncTimer = null;
+      if(syncDirty && cloud && cloud.pantryId){
+        saveToCloud(true);
+      }
+    }, delay);
+  }
+
+  function save(skipAutoSync){
     try{ localStorage.setItem(DATA_KEY, JSON.stringify(todos)); }
     catch(e){ console.error("本地保存失败：", e); }
+    if(!skipAutoSync){
+      mutationSeq++;
+      syncDirty = true;
+      scheduleAutoSync(0);
+    }
   }
 
   // ===== 云端凭证读写 =====
@@ -1312,6 +1425,7 @@
     bindBtn.textContent = isBound ? "已绑定云端" : "绑定云端";
     bindBtnMobile.classList.toggle("bound", isBound);
     bindBtnMobileText.textContent = isBound ? "已绑定" : "绑定云端";
+    updateSyncStatusUI();
   }
 
   // ===== 工具 =====
@@ -2049,7 +2163,11 @@
       var remote = await fetchCloud();
       clearTimeout(timer);
       todos = remote;
-      save(); render();
+      if(syncTimer){ clearTimeout(syncTimer); syncTimer = null; }
+      syncDirty = false;
+      syncState = "idle";
+      save(true); render();
+      updateSyncStatusUI();
       hideMask();
       showToast("已从云端拉取 " + todos.length + " 条待办", "success");
     }catch(e){
@@ -2065,14 +2183,24 @@
     }
   }
 
-  async function saveToCloud(){
-    if(saveCloudBtn.disabled) return;
-    if(!cloud || !cloud.pantryId){
-      showToast("尚未绑定云端，请先点击「绑定云端」", "error");
+  async function saveToCloud(isAuto){
+    if(syncing){
+      if(!isAuto) showToast("正在同步中，请稍候…");
       return;
     }
+    if(!cloud || !cloud.pantryId){
+      if(!isAuto) showToast("尚未绑定云端，请先点击「绑定云端」", "error");
+      return;
+    }
+    if(syncTimer){ clearTimeout(syncTimer); syncTimer = null; }
+    syncing = true;
+    syncState = "syncing";
+    lastAttemptAt = Date.now();
+    var snapSeq = mutationSeq;
     saveCloudBtn.disabled = true;
     saveCloudBtnM.disabled = true;
+    updateSyncStatusUI();
+
     var bodyData = { todos: todos, updatedAt: new Date().toISOString() };
     try{
       var res = await fetch(basketUrl(), {
@@ -2083,21 +2211,58 @@
       if(!res.ok){
         var e1 = await res.json().catch(function(){ return {}; });
         var msg = e1.message || e1.error || ("HTTP " + res.status);
-        if(res.status === 429) msg = "请求过于频繁，已被限流，请稍后再试";
-        throw new Error(msg);
+        var err = new Error(res.status === 429 ? "请求过于频繁，已被限流，请稍后再试" : msg);
+        err.status = res.status;
+        throw err;
       }
-      showToast("已保存到云端", "success");
+      setLastSync(Date.now());
+      if(mutationSeq === snapSeq){
+        syncDirty = false;
+        syncState = "idle";
+      }else{
+        syncDirty = true;
+        syncState = "pending";
+      }
+      updateSyncStatusUI();
+      if(!isAuto) showToast("已保存到云端", "success");
     }catch(e){
       console.error(e);
-      showToast("保存失败：" + e.message, "error");
+      syncDirty = true;
+      if(e && e.status === 429){
+        syncState = "ratelimit";
+        updateSyncStatusUI();
+        scheduleAutoSync(SYNC_429_BACKOFF_MS);
+      }else{
+        syncState = "error";
+        updateSyncStatusUI();
+      }
+      if(!isAuto) showToast("保存失败：" + e.message, "error");
     }finally{
+      syncing = false;
       saveCloudBtn.disabled = false;
       saveCloudBtnM.disabled = false;
+      if(syncDirty && syncState === "pending"){
+        scheduleAutoSync(0);
+      }
     }
   }
 
-  saveCloudBtn.addEventListener("click", saveToCloud);
-  saveCloudBtnM.addEventListener("click", saveToCloud);
+  saveCloudBtn.addEventListener("click", function(){ saveToCloud(false); });
+  saveCloudBtnM.addEventListener("click", function(){ saveToCloud(false); });
+
+  // 断网恢复或切出页面时自动补传未同步改动
+  window.addEventListener("online", function(){
+    if(syncDirty && cloud && cloud.pantryId && !syncing){
+      scheduleAutoSync(2000);
+    }
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "hidden" && syncDirty && cloud && cloud.pantryId && !syncing){
+      if(Date.now() - lastAttemptAt >= SYNC_COOLDOWN_MS){
+        saveToCloud(true);
+      }
+    }
+  });
   pullCloudBtn.addEventListener("click", loadFromCloud);
   pullCloudBtnM.addEventListener("click", loadFromCloud);
 
