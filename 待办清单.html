@@ -85,30 +85,45 @@
 
   button,input,select,textarea{font-family:inherit;}
   button{cursor:pointer;border:none;background:none;color:inherit;}
+  [hidden]{display:none!important;}
 
-  .app-shell{min-height:100vh;}
-  .view{display:none;}
+  .app-shell{
+    min-height:100vh;
+    padding:24px 28px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+  .view{display:none;width:100%;}
   .view.active{display:block;animation:fadeIn .18s ease-out;}
   @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 
-  /* ===== 桌面一体化 Studio 分栏架构 ===== */
+  /* ===== 桌面居中一体化 Studio 视窗 ===== */
   .layout{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
     display:grid;
-    grid-template-columns:268px minmax(0,1fr);
-    min-height:100vh;
+    grid-template-columns:264px minmax(0,1fr);
+    min-height:calc(100vh - 48px);
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:0 2px 6px rgba(24,24,27,.03), 0 20px 56px -18px rgba(24,24,27,.10);
+    overflow:clip;
   }
 
   /* 左侧架构导航栏 */
   .sidebar{
     background:var(--rail-bg);
     border-right:1px solid var(--line);
-    padding:24px 18px 20px;
+    padding:22px 18px 20px;
     display:flex;
     flex-direction:column;
     gap:18px;
     position:sticky;
-    top:0;
-    height:100vh;
+    top:24px;
+    max-height:calc(100vh - 48px);
     overflow-y:auto;
   }
 
@@ -268,7 +283,7 @@
     backdrop-filter:blur(20px) saturate(140%);
     -webkit-backdrop-filter:blur(20px) saturate(140%);
     border-bottom:1px solid var(--line);
-    padding:16px clamp(20px,3.6vw,44px);
+    padding:16px 28px;
     display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
   }
   .view-heading{
@@ -330,10 +345,9 @@
   .search-clear.show{display:flex;}
   .search-clear:hover{background:var(--surface-muted);color:var(--text);}
 
-  /* 内容容器 */
+  /* 内容容器（撑满右侧居中画布，与顶栏左右严格对齐） */
   .canvas-inner{
-    padding:18px clamp(20px,3.6vw,44px) 0;
-    max-width:960px;
+    padding:18px 28px 0;
     width:100%;
     display:flex;flex-direction:column;gap:14px;
   }
@@ -722,7 +736,8 @@
 
   /* ===== 窄桌面 / Mac 半屏（681px–960px） ===== */
   @media (max-width:960px) and (min-width:681px){
-    .layout{grid-template-columns:228px minmax(0,1fr);}
+    .app-shell{padding:12px;}
+    .layout{grid-template-columns:228px minmax(0,1fr);min-height:calc(100vh - 24px);border-radius:16px;}
     .sidebar{padding:18px 14px;}
     .top-bar{padding:14px 20px;}
     .canvas-inner{padding:14px 20px 0;}
@@ -731,7 +746,11 @@
 
   /* ===== 手机响应式适配（<= 680px，首屏即见待办内容） ===== */
   @media (max-width:680px){
-    .layout{grid-template-columns:1fr;min-height:auto;}
+    .app-shell{padding:0;display:block;}
+    .layout{
+      grid-template-columns:1fr;min-height:auto;max-width:none;
+      border:none;border-radius:0;box-shadow:none;background:transparent;overflow:visible;
+    }
     .sidebar{
       position:static;height:auto;overflow:visible;
       background:transparent;border-right:none;
